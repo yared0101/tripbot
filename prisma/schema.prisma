@@ -1,0 +1,66 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model user {
+  username            String               @id
+  password            String
+  organizationProfile organizationProfile?
+  individualProfile   individualProfile?
+  trip                trip[]
+}
+
+model organizationProfile {
+  organizationName String  @unique
+  logo             String?
+  telegramUsername String?
+  phoneNumber      String?
+  bankName         String?
+  bankAccNumber    String?
+  bankAccHolder    String?
+  telegram         String?
+  instagram        String?
+  facebook         String?
+  otherAccounts    String?
+  username         String  @unique
+  user             user    @relation(fields: [username], references: [username])
+}
+
+model individualProfile {
+  name             String
+  telegramUsername String?
+  phoneNumber      String?
+  username         String  @unique
+  user             user    @relation(fields: [username], references: [username])
+}
+
+model trip {
+  id             Int     @id @default(autoincrement())
+  posterPictures String?
+  description    String?
+  anything       String?
+  clickedCount   Int     @default(0)
+  username       String?
+  user           user?   @relation(fields: [username], references: [username])
+  telegramId     Int?
+  admin          admin?  @relation(fields: [telegramId], references: [telegramId])
+  postedId       String?
+}
+
+model admin {
+  telegramId Int     @unique
+  username   String?
+  name       String
+  current    Boolean
+  super      Boolean
+  password   String
+  trip       trip[]
+}
